@@ -3,30 +3,50 @@ import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 const galleryList = document.querySelector(".gallery");
 
-const itemsMarkup = galleryItems.reduce((acc, current) => {
-  return (acc += `<a class='gallery__link' href="${current.original}"><img class='gallery__image' src="${current.preview}" data-source="${current.original}" alt="${current.description}""></img></a>`);
+const itemsMarkup = galleryItems.reduce((acc, {original, preview, description}) => {
+  return (acc += `<div class="gallery__item">
+                  <a class='gallery__link' href="${original}">
+                  <img 
+                    class='gallery__image' 
+                    src="${preview}" 
+                    data-source="${original}" 
+                    alt="${description}"">
+                  </img></a></div>`);
 }, "");
 
 galleryList.insertAdjacentHTML("afterbegin", itemsMarkup);
 
-galleryList.addEventListener("click", onModalOpen);
+galleryList.addEventListener("click", onImgClick);
 
-function onModalOpen(event) {
+function getItemUrl (event) {
+  return event.target.dataset.source;
+}
+
+function onImgClick (event) {
   event.preventDefault();
-
+  
+  const isImage = event.target.classList.contains('gallery__image')
+  if(!isImage) {
+    return;
+  }
+  
+  const imgUrl = getItemUrl(event);
   const instance = basicLightbox.create(
-    `<img src="${event.target.dataset.source}" width="800" height="600">`
-  );
-
+        `<img src="${imgUrl}" width="800" height="600">`
+      );
   instance.show();
 
-  window.addEventListener("keydown", onModalClose.bind(instance));
+  function closeModal (event) {
+    if (event.code !== "Escape") {
+      return; 
+    }
+    this.close();
+    // window.removeEventListener('keydown', instanceCloseModal)
+    console.log(event);
+  }
+
+  const instanceCloseModal = closeModal.bind(instance)
+  window.addEventListener('keydown', instanceCloseModal);
 }
 
-function onModalClose(event) {
-  console.log(event);
-  if (event.code === "Escape") {
-    window.removeEventListener("keydown", onModalClose);
-    this.close();
-  }
-}
+
