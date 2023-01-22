@@ -41,7 +41,7 @@ function onImgClick (event) {
       return; 
     }
     this.close();
-    // window.removeEventListener('keydown', instanceCloseModal)
+    window.removeEventListener('keydown', instanceCloseModal)
     console.log(event);
   }
 
